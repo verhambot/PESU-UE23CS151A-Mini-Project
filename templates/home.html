@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+</head>
+<link rel="stylesheet" href="{{ url_for('static',filename='/css/home.css') }}">
+<link rel="stylesheet" href="../static/css/home.css">
+<body>
+
+  {% if success %}
+    <nav class="nav">
+      <a href="#Home" class="nav-item is-active" active-color="orange">Home</a>
+      <a href="#Menu" class="nav-item" active-color="green">Menu</a>
+      <a href="#Orders" class="nav-item" active-color="blue">Orders</a>
+      <a href="#Wallet" class="nav-item" active-color="red">Wallet</a>
+      <a href="#Support" class="nav-item" active-color="rebeccapurple">Support</a>
+      <span class="nav-indicator"></span>
+    </nav>
+
+  {% elif not success %}
+  <form method="POST" class="formotp">
+    <label for="otp">Enter OTP</label>
+    <input type="text" id="otp" name="otp" required>
+    <button type="submit">Submit</button>
+  </form>
+  {% endif %}
+</body>
+<script src="{{ url_for('static',filename='/js/home.js')}}"></script>
+</html>

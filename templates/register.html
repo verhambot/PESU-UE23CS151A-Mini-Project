@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<link rel="stylesheet" href="../static/css/register.css">
+<body>
+    <form method="POST" class="reg">
+        <label for="srn" class="srn"><input name="srn" id="srn" type="text" placeholder="SRN"></label>
+        <label for="phone" class="phone">
+                <select class="dropbtn" id="pcode" name="pcode">
+                    {% for o in data %}
+                    <option value="{{ o.code }}">{{ o.code }}</option>
+                    {% endfor %}
+                </select><input id="phone" name="phone" type="text" placeholder="Phone">
+        </label>
+        <button id="submit" type="submit">submit</button>
+    </form>
+</body>
+</html>
