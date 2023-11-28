@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, redirect, url_for
 from twilio.rest import Client
 import random
 import mysql.connector as sql
+import hashlib
 
 app = Flask(__name__)
 sqlc = sql.connect(
@@ -21,7 +22,8 @@ def index():
     if request.method == 'POST':
         session={}
         srn = request.form.get('srn')
-        cur.execute(f'select phone from log1 where SRN="{srn}";')
+        hashedsrn=hash256(srn)
+        cur.execute(f'select phone from log1 where SRN="{hashedsrn}";')
         ph=cur.fetchone()
         if ph:
             gotp = genotp(ph)
@@ -49,7 +51,8 @@ def register():
         srn=request.form.get('srn')
         phone=request.form.get('phone')
         phno=cod+phone
-        cur.execute(f"insert into log1 values('{srn}','{phno}')")
+        hashedsrn=hash256(srn)
+        cur.execute(f"insert into log1 values('{hashedsrn}','{phno}')")
         sqlc.commit()
         return 'registered'
     return render_template('register.html',data=[{'code':'+91'}, {'code':'+619'}, {'code':'+69'}])
@@ -66,6 +69,10 @@ def genotp(ph):
 
 def validate_otp(eotp, genotp):
     return eotp == genotp
+
+def hash256(string1):
+    hashed=hashlib.sha256(string1.encode()).hexdigest()
+    return(hashed)
 
 if __name__ == '__main__':
     app.run(debug=True)
