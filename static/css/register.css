@@ -53,6 +53,10 @@ button {
     padding: 20px;
 }
 
+button:hover {
+    background-color: blue;
+}
+
 button:active {
     background-color: red;
 }

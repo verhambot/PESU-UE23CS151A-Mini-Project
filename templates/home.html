@@ -1,31 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
 </head>
 <link rel="stylesheet" href="{{ url_for('static',filename='/css/home.css') }}">
 <link rel="stylesheet" href="../static/css/home.css">
 <body>
 
-  {% if success %}
-    <nav class="nav">
-      <a href="#Home" class="nav-item is-active" active-color="orange">Home</a>
-      <a href="#Menu" class="nav-item" active-color="green">Menu</a>
-      <a href="#Orders" class="nav-item" active-color="blue">Orders</a>
-      <a href="#Wallet" class="nav-item" active-color="red">Wallet</a>
-      <a href="#Support" class="nav-item" active-color="rebeccapurple">Support</a>
-      <span class="nav-indicator"></span>
-    </nav>
+    {% if success %}
+    <form action="" method="post" name="order"></form>
+        <div class="srn">{{srn}}</div>
+        <nav class="nav">
+            <a href="#Menu" class="nav-item is-active" active-color="red">Menu</a>
+            <a href="#Orders" class="nav-item" active-color="red">Orders</a>
+            <a href="#Wallet" class="nav-item" active-color="red"><svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none">
+                <path d="M0 0H83.82V83.82H0V0Z" fill="white" fill-opacity="0.01"/>
+                <path d="M6.985 13.97H76.835V27.94C76.835 27.94 59.3725 31.4325 59.3725 41.91C59.3725 52.3875 76.835 55.88 76.835 55.88V69.85H6.985V13.97Z" fill="#2F88FF" stroke="black" stroke-width="6.985" stroke-linejoin="round"/>
+                <path d="M76.835 41.91H73.3425" stroke="black" stroke-width="6.985" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ₹{{wallet}}
+            </a>
+            <a href="#Support" class="nav-item" active-color="red">Help</a>
+            <span class="nav-indicator"></span>
+        </nav>
+        <div class="container">
+            <div class="Menu" id="Menu">
+                {% for o in data %}
+                    <div class="card">
+                        <img src="/static/assets/img/{{ o.food }}" alt="{{ o.food }}">
+                        <p class="food">{{o.food}}</p>
+                        <p class="price">₹{{o.price}}</p>
+                        <div class="quan"><button class="sub qbt">-</button><p class="countc">0</p><button class="addd qbt">+</button></div>
+                    </div>
+                {% endfor %}
+                <div class="checkout"><button class="chkt">Checkout</button></div>
+            </div>
+            <div class="Wallet" id="Wallet">
+                <p class="wallp">Wallet Balance</p>
+                <p class="wallbal">₹{{wallet}}</p>
+                <button class="wallb">Add Money</button>
+                <button class="wallb">View Transactions</button>
+            </div>
+            <div class="Orders" id="Orders">
+                <table>
+                    <tr>
+                        <th>Order No.</th>
+                        <th>Order</th>
+                        <th>Price</th>
+                        <th>TransactionId</th>
+                        <th>Status</th>
+                        <th>Quantity</th>
+                    </tr>
+                    {% for o in orders %}
+                    <tr>
+                        <td>{{o.orderno}}</td>
+                        <td>{{o.order}}</td>
+                        <td>{{o.price}}</td>
+                        <td>{{o.transactionid}}</td>
+                        <td>{{o.status}}</td>
+                        <td>{{o.quantity}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="Support" id="Support">
+                <form name="Help">
+                    What do you need help with: <input type="textarea">
+                    <button>Submit</button>
+                    Contact: 
+                    <br>Email: <a href="amogh.e.m7@gmail.com">zomapes</a>
+                    <br>Phone: +91 9611664662
+                </form>
+            </div>
 
-  {% elif not success %}
-  <form method="POST" class="formotp">
-    <label for="otp">Enter OTP</label>
-    <input type="text" id="otp" name="otp" required>
-    <button type="submit">Submit</button>
-  </form>
-  {% endif %}
+        </div>
+
+    {% elif not success %}
+    <form method="POST" class="formotp" name="otp">
+        <label for="otp">Enter OTP</label>
+        <input type="text" id="otp" name="otp" required>
+        <button type="submit">Submit</button>
+    </form>
+    {% endif %}
 </body>
-<script src="{{ url_for('static',filename='/js/home.js')}}"></script>
+<script src="{{ url_for('static',filename='/js/home.js') }}"></script>
 </html>
