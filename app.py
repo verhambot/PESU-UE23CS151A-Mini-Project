@@ -3,6 +3,14 @@ from twilio.rest import Client
 import random
 import mysql.connector as sql
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+account_sid = os.getenv('ACC_SID')
+auth_token = os.getenv('AUTH_TOKEN')
+client = Client(account_sid, auth_token)
+
 app = Flask(__name__)
 sqlc = sql.connect(
     host = 'localhost',
@@ -11,9 +19,6 @@ sqlc = sql.connect(
     database = 'zomapes'
 )
 cur=sqlc.cursor(buffered=True)
-account_sid = 'ACe93a1e1c711c40d0b8ab76679e07fd2e'
-auth_token = '4842a1873fab465da57b302f2e8dacb6'
-client = Client(account_sid, auth_token)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -55,7 +60,6 @@ def home():
                 di1={}
                 di1['orderno']=i[0]
                 di1['order']=i[1]
-                di1['price']=i[2]
                 di1['transactionid']=i[3]
                 di1['status']=i[4]
                 di1['quantity']=i[5]
@@ -70,6 +74,8 @@ def home():
                 di1['price']=i[1]
                 di1['quantity']=i[2]
                 cart.append(di1)
+            cur.execute(f"delete from carts where srn='{srn}';")
+            sqlc.commit()
             return render_template('home.html', data=data, orders=orders, wallet=wallet, cart=cart, srn=srn, success=True)
     return render_template('home.html', success=False)
 
@@ -105,6 +111,10 @@ def cartSub():
         cur.execute(f'delete from carts where srn="{quant[3]}" and food="{quant[0]}";')
     sqlc.commit()
     return 'removed'
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html')
 
 def genotp(ph):
     gotp = random.randint(100000, 999999)

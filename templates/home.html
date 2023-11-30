@@ -35,7 +35,7 @@
                         <div class="quan"><button class="sub qbt">-</button><p class="countc">0</p><button class="addd qbt">+</button></div>
                     </div>
                 {% endfor %}
-                <div class="checkout"><button class="chkt">Checkout</button></div>
+                <div class="checkout"><a href="/cart"><button class="chkt">Checkout</button></a></div>
             </div>
             <div class="Wallet" id="Wallet">
                 <p class="wallp">Wallet Balance</p>
@@ -48,8 +48,7 @@
                     <tr>
                         <th>Order No.</th>
                         <th>Order</th>
-                        <th>Price</th>
-                        <th>TransactionId</th>
+                        <th>Transaction Id</th>
                         <th>Status</th>
                         <th>Quantity</th>
                     </tr>
@@ -57,7 +56,6 @@
                     <tr>
                         <td>{{o.orderno}}</td>
                         <td>{{o.order}}</td>
-                        <td>{{o.price}}</td>
                         <td>{{o.transactionid}}</td>
                         <td>{{o.status}}</td>
                         <td>{{o.quantity}}</td>
