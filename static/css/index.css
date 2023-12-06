@@ -1,8 +1,17 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #FF7597;
+    --secondary: #FF0266;
+}
+
 body {
     background-color: black;
     margin:0;
     font-family: 'mc';
-    color:white;
+    color:var(--secondary);
 }
 
 .container {
@@ -22,12 +31,14 @@ body {
     background-color: rgb(255, 255, 255,.15);
     padding: 4vw;
     border-radius: 16px;
-    width:60vw;
+    width:70vw;
     font-size: 4vw;
+    color: white;
 }
 
 input {
-    margin:1.5vh;
+    margin: .3em;
+    margin-bottom: 1em;
     height: 3vh;
     border:none;
     border-radius:4px;
@@ -41,32 +52,26 @@ input {
     color: rgb(0, 0, 0, .6);
     font-family: 'mc';
     text-align: center;
-  }
-
-button {
-    font-size: 4vw;
-    display:grid;
-    margin:2vh;
-    margin-bottom: 3vh;
-    width:fit-content;
-    justify-content: end;
-    border:none;
-    border-radius: 16px;
-    background-color: rgb(128, 128, 128,2.2);
-    height: 35px;
-    justify-content: center;
-    color: white;
-    font-family: 'mc';
-    height: fit-content;
-    padding: 20px;
 }
 
-button:hover {
-    background-color: blue;
+button {
+    width:fit-content;
+    border:none;
+    border-radius: 4px;
+    background-color:black;
+    color: var(--primary);
+    font-family: 'mc';
+    height: fit-content;
+    padding: .6em;
+    font-size: 1em;
+    margin: .5em;
+    border: var(--secondary) 2px solid;
 }
 
 button:active {
-    background-color: red;
+    background-color: var(--primary);
+    color:black;
+    transition: .1s;
 }
 
 a {
@@ -75,10 +80,6 @@ a {
     margin-left:-5px;
 }
 
-a:hover {
-    color: blue;
-}
-   
 @font-face {
     font-family: 'mc';
     src: url('../assets/fonts/Minecrafter.Alt.ttf');

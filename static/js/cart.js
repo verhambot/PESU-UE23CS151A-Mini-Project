@@ -1,65 +1,10 @@
-const indicator = document.querySelector('.nav-indicator');
-const items = document.querySelectorAll('.nav-item');
-const menu = document.querySelector('#Menu');
-const wall = document.querySelector('#Wallet');
-const support = document.querySelector('#Support');
-const orders = document.querySelector('#Orders');
-const srn = document.querySelector('.srn').innerHTML;
-
-function closeAll() {
-    menu.style.display = 'none';
-    wall.style.display = 'none';
-    support.style.display = 'none';
-    orders.style.display = 'none';
-}
-
-function openMenu() {
-    menu.style.display = 'grid';
-}
-
-function handleIndicator(el) {
-    items.forEach(item => {
-        item.classList.remove('is-active');
-        item.removeAttribute('style');
-    });
-    
-    indicator.style.width = `${el.offsetWidth}px`;
-    indicator.style.left = `${el.offsetLeft}px`;
-    indicator.style.backgroundColor = el.getAttribute('active-color');
-
-    el.classList.add('is-active');
-    el.style.color = el.getAttribute('active-color');
-}
-
-items.forEach((item) => {
-    item.addEventListener('click', (e) => {
-        e.preventDefault();
-        handleIndicator(e.target);
-    });
-    item.classList.contains('is-active') && handleIndicator(item);
-});
-
+const srn=document.querySelector('.srn').innerHTML;
 document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('nav a');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            closeAll();
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            if (targetId=='#Menu') {
-                targetSection.style.display = 'grid';
-            }
-            else {
-                targetSection.style.display = 'flex';
-            }
-        });
-    });
     const countButtons = document.querySelectorAll('.addd');
     const subtractButtons = document.querySelectorAll('.sub');
     const countDisplay = document.querySelectorAll('.countc');
     const food = document.querySelectorAll('.food');
     const price = document.querySelectorAll('.price');
-    const checkoutDisplay = document.querySelector('.chkt');
 
     countButtons.forEach((button, index) => {
         button.addEventListener('click', () => {
@@ -77,9 +22,25 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.text())
             .catch(error => console.error('Error:', error));
-            cdisplay(countDisplay,checkoutDisplay);
         });
     });
+
+    const subtotal = document.querySelectorAll('.price');
+    console.log(subtotal);
+    const sbdisplay = document.querySelector('.foodsum');
+    const gstdisplay = document.querySelector('.gst');
+    const gtdisplay = document.querySelector('.grandtotal');
+    let subprice=0
+    subtotal.forEach((pr) => {
+        console.log(pr.innerHTML);
+        subprice+=Number(pr.innerHTML.replace('\u20b9',''))
+    });
+    const gst=.18*subprice;
+    const grandtotal=gst+subprice
+    sbdisplay.innerHTML =  '\u20b9'+subprice;
+    gstdisplay.innerHTML = '\u20b9'+gst;
+    gtdisplay.innerHTML = '\u20b9'+grandtotal;
+
 
     subtractButtons.forEach((button, index) => {
         button.addEventListener('click', () => {
@@ -89,7 +50,10 @@ document.addEventListener('DOMContentLoaded', function() {
             var sqlSub = [selectedFood, foodPrice, count-1, srn];
             if (count > 0) {
                 countDisplay[index].innerHTML = String(count - 1);
-            }
+                if (count==1) {
+                    removeTableRow(button);
+                    goHome();
+                }
             fetch('/cartSub', {
                 method: 'POST',
                 headers: {
@@ -99,8 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.text())
             .catch(error => console.error('Error:', error));
-            cdisplay(countDisplay,checkoutDisplay);
-            
+        }
         });
     });
 
@@ -116,23 +79,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function cdisplay(y,checkoutDisplay) {
-    let chkitems='';
-    let nitems=y.length;
-    s='';
-    for(let i=0;i<nitems;i++) {
-        s+='0';
-    }
-    y.forEach((p,index) => {
-        chkitems+=y[index].innerHTML;
-    });
-    if (chkitems!=s) {
-        checkoutDisplay.style.display='flex';
-    }
-    else {
-        checkoutDisplay.style.display='none';
+function removeTableRow(button) {
+    var row = button.closest('tr');
+    row.remove();
+    const cartRows = document.querySelectorAll('.cart table tr');
+    if (cartRows.length === 1) { 
+        window.location.href = '/home';
     }
 }
 
-
-
+function goHome() {
+    fetch('/home', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gotp),
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response from Flask:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
