@@ -1,0 +1,55 @@
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+--
+-- Host: localhost    Database: zomapes
+-- ------------------------------------------------------
+-- Server version	8.0.35
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `orders`
+--
+
+DROP TABLE IF EXISTS `orders`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `orders` (
+  `orderno` int DEFAULT NULL,
+  `food` varchar(30) DEFAULT NULL,
+  `price` double DEFAULT NULL,
+  `transactionId` varchar(255) DEFAULT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `quantity` int DEFAULT NULL,
+  `srn` varchar(13) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `orders`
+--
+
+LOCK TABLES `orders` WRITE;
+/*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (1,'Watter Bottle',20,'gawd619','paid',1,'PES1UG23AM043'),(2,'Fried Rice',60,'aafc9a07f9272428c108fc64c9eea64165457cda1c45fbceb5ce73220e72edf0','paid',1,'PES1UG23AM043'),(2,'Veg Noodles',70,'aafc9a07f9272428c108fc64c9eea64165457cda1c45fbceb5ce73220e72edf0','paid',1,'PES1UG23AM043'),(2,'Chicken Noodles',90,'aafc9a07f9272428c108fc64c9eea64165457cda1c45fbceb5ce73220e72edf0','paid',1,'PES1UG23AM043'),(3,'Fried Rice',60,'7238561671e3b4870edd5de25022d482e3d4de2559b7c786ebad1193a1139fe1','paid',1,'PES1UG23AM043'),(3,'Veg Noodles',70,'7238561671e3b4870edd5de25022d482e3d4de2559b7c786ebad1193a1139fe1','paid',1,'PES1UG23AM043'),(3,'Paneer Parotta',60,'7238561671e3b4870edd5de25022d482e3d4de2559b7c786ebad1193a1139fe1','paid',1,'PES1UG23AM043'),(4,'Fried Rice',60,'3b59fddf9e9626b03c784c91a3e0199e28917d63d4653b238c2e1fe86dcd566d','paid',1,'PES1UG23AM043'),(4,'Veg Noodles',70,'3b59fddf9e9626b03c784c91a3e0199e28917d63d4653b238c2e1fe86dcd566d','paid',1,'PES1UG23AM043'),(5,'Chicken Biryani',90,'2525e3784c507fb330ddf9b0c14b9375ce5a595263340d6a2fea64ef16e3f71a','paid',1,'PES1UG23AM043'),(5,'Chicken Noodles',90,'2525e3784c507fb330ddf9b0c14b9375ce5a595263340d6a2fea64ef16e3f71a','paid',1,'PES1UG23AM043');
+/*!40000 ALTER TABLE `orders` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2023-12-07 12:16:13
