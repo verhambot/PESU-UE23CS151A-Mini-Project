@@ -338,6 +338,7 @@ img {
     src: url(../assets/fonts/Minecrafter.Reg.ttf);
 }
 
+
 @media (max-width: 580px) {
     .nav { overflow: auto; }
 }

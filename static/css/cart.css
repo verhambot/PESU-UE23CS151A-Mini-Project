@@ -48,19 +48,21 @@ button:active {
 }
 
 .propop {
+    text-align: center;
     font-size: .5em;
     background-color: white;
     color: black;
-    padding: .8em;
+    padding: 0.8em;
     border-radius: 20px;
     z-index: 33;
     position: absolute;
-    margin-left:-6.9em;
+    margin-left: -15em;
     animation: fade-in .5s ease forwards;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 22em;
 }
 
 .back {

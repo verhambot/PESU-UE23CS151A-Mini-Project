@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, session, jsonify
+from flask import Flask, request, render_template, redirect, url_for, session
 from twilio.rest import Client
 import random
 import mysql.connector as sql
@@ -6,6 +6,7 @@ import hashlib
 import os
 from dotenv import load_dotenv
 from flask_session import Session
+
 load_dotenv()
 
 account_sid = os.getenv('ACC_SID')
@@ -31,7 +32,7 @@ def index():
         ph=cur.fetchone()
         if ph:
             session['srn']=srn
-            session['gotp']=genotp(ph)
+            session['gotp']=genotp(1)
             session['logged_in']=False
             return redirect(url_for('home'))
     return render_template('index.html')
@@ -51,7 +52,8 @@ def home():
             if 'backfromcart' in request.form:
                 entered_otp=gotp
             cur.execute(f'select wallet from log1 where SRN="{srn}";')
-            wallet=cur.fetchone()[0]
+            wallet=round(cur.fetchone()[0],2)
+            session['wallet']=wallet
             if validate_otp(entered_otp,gotp) or session['logged_in']:
                 session['logged_in']=True
                 cur.execute("select Food,Price from zomamenu;")
@@ -136,23 +138,98 @@ def cart():
         return render_template('cart.html', cart=cart,srn=srn)
     else:
         return redirect(url_for('index'))
+    
+@app.route('/receipt',methods=['POST'])
+def receipt():
+    srn=session.get('srn')
+    # if request.method=='POST':
+    wallbal=session.get('wallet')
+    cur.execute(f'select sum(price) from carts where srn="{srn}";')
+    grandtotal=cur.fetchone()[0]
+    grandtotal+=1.18*grandtotal
+    if wallbal>=grandtotal:
+        cur.execute(f'select * from carts where srn="{srn}";')
+        cart=cur.fetchall()
+        cur.execute('select orderno from orders')
+        currorder=cur.fetchall()[-1][0]+1
+        tID=createTransID(srn,grandtotal,currorder)
+        for i in cart:
+            cur.execute(f'insert into orders values({currorder},"{i[0]}",{i[1]},"{tID}","paid",{i[2]},"{srn}");')
+        wallbal-=grandtotal
+        cur.execute(f'update log1 set wallet={wallbal} where srn="{srn}";')
+        orderotp=genotp(3)
+        cur.execute(f'insert into adminmanageorders values({currorder},"{orderotp[1]}","{srn}");')
+        sqlc.commit()
+        return redirect(url_for('uorders'))
+    else:
+        return redirect(url_for('addmoni'))
+
+@app.route('/uorders',methods=['GET','POST'])
+def uorders():
+    srn=session.get('srn')
+    cur.execute(f'select * from adminmanageorders where srn="{srn}";')
+    userorders=cur.fetchall()
+    passOrders=[]
+    orderindex=[]
+    for i in userorders:
+        data={}
+        data['orderno']=i[0]
+        orderindex.append(i[0])
+        data['otp']=i[1]
+        passOrders.append(data)
+    if request.method=='POST' and 'orderotp' in request.form:
+        selectOrder=request.form.get('orderno')
+        oi=orderindex.index(selectOrder)
+        otpSelected=request.form.get('otp')
+        diForOtp=passOrders[oi]
+        checkotp=diForOtp['otp']
+        if validate_otp(otpSelected,checkotp):
+            cur.execute(f'delete from adminmanageorders where orderno={selectOrder};')
+            cur.execute(f'update orders set status="collected" where srn="{srn}" and orderno={selectOrder};')
+            sqlc.commit()
+            return redirect(url_for('uorders'))
+        return redirect(url_for('uorders'))
+    return render_template('uorders.html',passOrders=passOrders)
+
+@app.route('/addmoni',methods=['GET','POST'])
+def addmoni():
+    srn=session.get('srn')
+    if request.method=='POST':
+        amt=float(request.form.get('money'))
+        status=request.form.get('status')
+        if status:
+            cur.execute(f'update log1 set wallet={amt} where SRN="{srn}";')
+            return 'added'
+    return render_template('addmoni')
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html')
 
-def genotp(ph):
+def genotp(type):
     gotp = random.randint(100000, 999999)
-    # message = client.messages.create(
-    #     from_='+12164382762',
-    #     body=f'Your zomapes otp is {gotp}',
-    #     to=ph
-    # )
     sha256 = hashlib.sha256()
     sha256.update(str(gotp).encode())
     string_hash = sha256.hexdigest()
     print(gotp)
-    return string_hash
+    if type==1:
+        return string_hash
+    elif type==2:
+        return gotp
+    elif type==3:
+        return [gotp,string_hash]
+    else:
+        return string_hash
+
+def send_msg(ph,otp,reason):
+    b=''
+    if reason==1:
+        b=f'Your zomapes otp for login is {otp}'
+    message = client.messages.create(
+        from_='+12164382762',
+        body=b,
+        to=ph
+    )
 
 def validate_otp(eotp, genotp):
     sha256 = hashlib.sha256()
@@ -160,6 +237,13 @@ def validate_otp(eotp, genotp):
     ehotp = sha256.hexdigest()
     print(ehotp)
     return ehotp == genotp or eotp==genotp
+
+def createTransID(srn,moni,order):
+    s=str(srn)+str(moni)+str(order)
+    sha256 = hashlib.sha256()
+    sha256.update(s.encode())
+    transID = sha256.hexdigest()
+    return transID
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

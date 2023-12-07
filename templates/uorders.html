@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Uorders</title>
     <div class="navigator">
         <a href="../"><button class="back">back</button></a>
         <div class="srn">{{srn}}</div>
@@ -25,18 +25,20 @@
         </div>
     </div>
 </head>
-<link rel="stylesheet" href="../static/css/register.css">
+<link rel="stylesheet" href="../static/css/uorders.css">
 <body>
-    <form method="POST" class="reg">
-        <label for="srn" class="srn"><input name="srn" id="srn" type="text" placeholder="SRN" pattern="PES\d{1}[a-zA-Z]{2}d{2}[a-zA-Z]{2}d{3}"></label>
-        <label for="phone" class="phone">
-                <select class="dropbtn" id="pcode" name="pcode">
-                    {% for o in data %}
-                    <option value="{{ o.code }}">{{ o.code }}</option>
-                    {% endfor %}
-                </select><input id="phone" name="phone" type="text" placeholder="Phone">
-        </label>
-        <button id="submit" type="submit">submit</button>
-    </form>
+    {% if passOrders %}
+    <div class="uorders">
+        {% for o in passOrders %}
+        <form action="/uorders" class="uorder" method="POST">
+            <label for="otp">
+                {{o.orderno}}: <input type="number" class="otp" name="otp" id="otp">
+            </label>
+            <button class="submit" value="submit">Submit</button>
+        </form>
+        {% endfor %}
+    </div>
+    {% endif %}
 </body>
+<script src="{{ url_for('static',filename='/js/uorders.js') }}"></script>
 </html>
