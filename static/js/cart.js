@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(pr.innerHTML);
         subprice+=Number(pr.innerHTML.replace('\u20b9',''))
     });
-    const gst=.18*subprice;
-    const grandtotal=gst+subprice
+    const gst=Math.round(.18*subprice+4);
+    const grandtotal=gst+subprice;
     sbdisplay.innerHTML =  '\u20b9'+subprice;
     gstdisplay.innerHTML = '\u20b9'+gst;
     gtdisplay.innerHTML = '\u20b9'+grandtotal;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uorders</title>
     <div class="navigator">
-        <a href="../"><button class="back">back</button></a>
+        <a href="/home"><button class="back">back</button></a>
         <div class="srn">{{srn}}</div>
         <div class="logo">PESSATO</div>
         <div class="profile"><svg class="pfp" width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -20,6 +20,12 @@
             <div class="propop" style="display: none;">
                 <p>Logged in as {{srn}}</p>
                 <p>Profile</p>
+                <p><svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none">
+                    <path d="M0 0H83.82V83.82H0V0Z" fill="white" fill-opacity="0.01"/>
+                    <path d="M6.985 13.97H76.835V27.94C76.835 27.94 59.3725 31.4325 59.3725 41.91C59.3725 52.3875 76.835 55.88 76.835 55.88V69.85H6.985V13.97Z" fill="#2F88FF" stroke="black" stroke-width="6.985" stroke-linejoin="round"/>
+                    <path d="M76.835 41.91H73.3425" stroke="black" stroke-width="6.985" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>₹{{wallet}}
+                </p>
                 <button class="logout">Logout</button>
             </div>
         </div>
@@ -28,16 +34,20 @@
 <link rel="stylesheet" href="../static/css/uorders.css">
 <body>
     {% if passOrders %}
+    <p>Your Orders</p>
     <div class="uorders">
         {% for o in passOrders %}
-        <form action="/uorders" class="uorder" method="POST">
+        <form action="/uorders" class="uorder" method="POST" name="orderotp">
             <label for="otp">
-                {{o.orderno}}: <input type="number" class="otp" name="otp" id="otp">
+                <input type="hidden" name="orderno" value="{{ o.orderno }}">
+                {{o.orderno}}: <input type="number" class="otp" name="orderotp" id="orderotp">
             </label>
             <button class="submit" value="submit">Submit</button>
         </form>
         {% endfor %}
     </div>
+    {% else %}
+        <p>No orders</p>
     {% endif %}
 </body>
 <script src="{{ url_for('static',filename='/js/uorders.js') }}"></script>

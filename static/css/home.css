@@ -48,6 +48,28 @@ body {
     justify-content: center;
 }
 
+.ptitle {
+    border-bottom: black 5px solid;
+    padding-bottom: 1em;
+}
+
+.poption {
+    margin-top: .1em;
+    border-bottom: grey 5px solid;
+    padding: .7em 2em;
+    border-radius: 20px;
+}
+
+.poption:active {
+    border: none;
+    transform: translateY(.5em);
+}
+
+.wallethead {
+    height: 1.4em;
+    width: 1.4em;
+}
+
 .back {
     margin-right: auto;
 }
@@ -313,6 +335,7 @@ svg {
 table {
     border-collapse: collapse;
     margin-bottom: 20px;
+    font-family: Helvetica, sans-serif;
 }
   
 th, td {

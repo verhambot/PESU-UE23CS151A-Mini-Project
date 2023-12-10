@@ -71,7 +71,7 @@ def home():
                     di1={}
                     di1['orderno']=i[0]
                     di1['order']=i[1]
-                    di1['transactionid']=i[3]
+                    di1['transactionid']=i[3][-6::]
                     di1['status']=i[4]
                     di1['quantity']=i[5]
                     orders.append(di1)
@@ -144,9 +144,12 @@ def receipt():
     srn=session.get('srn')
     # if request.method=='POST':
     wallbal=session.get('wallet')
+    print(wallbal)
     cur.execute(f'select sum(price) from carts where srn="{srn}";')
     grandtotal=cur.fetchone()[0]
-    grandtotal+=1.18*grandtotal
+    print(grandtotal)
+    grandtotal=round(1.18*grandtotal,2)
+
     if wallbal>=grandtotal:
         cur.execute(f'select * from carts where srn="{srn}";')
         cart=cur.fetchall()
@@ -179,8 +182,8 @@ def uorders():
         passOrders.append(data)
     if request.method=='POST' and 'orderotp' in request.form:
         selectOrder=request.form.get('orderno')
-        oi=orderindex.index(selectOrder)
-        otpSelected=request.form.get('otp')
+        oi=orderindex.index(int(selectOrder))
+        otpSelected=request.form.get('orderotp')
         diForOtp=passOrders[oi]
         checkotp=diForOtp['otp']
         if validate_otp(otpSelected,checkotp):
@@ -235,8 +238,7 @@ def validate_otp(eotp, genotp):
     sha256 = hashlib.sha256()
     sha256.update(str(eotp).encode())
     ehotp = sha256.hexdigest()
-    print(ehotp)
-    return ehotp == genotp or eotp==genotp
+    return ehotp == genotp or eotp == genotp
 
 def createTransID(srn,moni,order):
     s=str(srn)+str(moni)+str(order)
