@@ -97,7 +97,7 @@ def register():
         phone=request.form.get('phone')
         phno=cod+phone
         if srn and phone:
-            cur.execute(f"insert into log1 values('{srn}','{phno}')")
+            cur.execute(f"insert into log1 values('{srn}','{phno}',0);")
             sqlc.commit()
             return 'registered'
     return render_template('register.html',data=[{'code':'+91'}, {'code':'+619'}, {'code':'+69'}])
@@ -203,7 +203,7 @@ def addmoni():
         if status:
             cur.execute(f'update log1 set wallet={amt} where SRN="{srn}";')
             return 'added'
-    return render_template('addmoni')
+    return render_template('addmoni.html')
 
 @app.errorhandler(404)
 def page_not_found(e):

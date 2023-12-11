@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="../static/css/register.css">
 <body>
     <form method="POST" class="reg">
-        <label for="srn" class="srn"><input name="srn" id="srn" type="text" placeholder="SRN" pattern="PES\d{1}[a-zA-Z]{2}d{2}[a-zA-Z]{2}d{3}"></label>
+        <label for="srn" class="srn"><input name="srn" id="srn" type="text" placeholder="SRN" pattern="PES\d{1}[a-zA-Z]{2}\d{2}[a-zA-Z]{2}\d{3}"></label>
         <label for="phone" class="phone">
                 <select class="dropbtn" id="pcode" name="pcode">
                     {% for o in data %}

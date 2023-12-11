@@ -84,9 +84,11 @@ body {
     display: none;
 }
 
-a {
+a, .poption:visited {
     text-decoration: none;
+    color:black;
 }
+
 
 .formotp {
     position: absolute;
@@ -270,6 +272,7 @@ svg {
     display: none;
     font-size: .6rem;
     width: fit-content;
+    margin:auto;
 }
 
 .quan {
@@ -354,6 +357,18 @@ tr:hover {
 
 img {
     font-size: .5em;
+}
+
+.foodi {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    width:20.8em;
+    height:20.8em;
+    border-radius: 8px;
 }
 
 @font-face {

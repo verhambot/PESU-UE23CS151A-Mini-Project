@@ -26,6 +26,9 @@
                     <path d="M76.835 41.91H73.3425" stroke="black" stroke-width="6.985" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>₹{{wallet}}
                 </p>
+                <a href="/uorders"><p class="poption">
+                    Active Orders
+                </p></a>
                 <button class="logout">Logout</button>
             </div>
         </div>
@@ -54,7 +57,7 @@
             <div class="Menu" id="Menu">
                 {% for o in data %}
                     <div class="card">
-                        <img src="/static/assets/img/{{ o.food }}.jpg" alt="{{ o.food }}">
+                        <img src="/static/assets/img/foods/{{ o.food }}.jpeg" alt="{{ o.food }}" class="foodi">
                         <p class="food">{{o.food}}</p>
                         <p class="price">₹{{o.price}}</p>
                         <div class="quan"><button class="sub qbt atc">-</button><p class="countc">0</p><button class="addd qbt atc">+</button></div>
