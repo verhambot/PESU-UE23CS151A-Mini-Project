@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
     <div class="navigator">
-        <a href="../"><button class="back">back</button></a>
+        <a href="/home"><button class="back">back</button></a>
         <div class="srn">{{srn}}</div>
         <div class="logo">PESSATO</div>
         <div class="profile"><svg class="pfp" width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -18,25 +18,25 @@
             </defs>
             </svg>
             <div class="propop" style="display: none;">
-                <p>logged in as {{srn}}</p>
-                <p>Profile</p>
-                <p><svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none">
+                <p class="ptitle">Logged in as {{srn}}</p>
+                <a href="/addmoni"><p class="poption"><svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none" class="wallethead">
                     <path d="M0 0H83.82V83.82H0V0Z" fill="white" fill-opacity="0.01"/>
                     <path d="M6.985 13.97H76.835V27.94C76.835 27.94 59.3725 31.4325 59.3725 41.91C59.3725 52.3875 76.835 55.88 76.835 55.88V69.85H6.985V13.97Z" fill="#2F88FF" stroke="black" stroke-width="6.985" stroke-linejoin="round"/>
                     <path d="M76.835 41.91H73.3425" stroke="black" stroke-width="6.985" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>₹{{wallet}}
-                </p>
-                <button class="logout">Logout</button>
-            </div>
+                </p></a>
+                <a href="/uorders"><p class="poption">
+                    Active Orders
+                </p></a>
+            <a href="/logout"><button class="logout">Logout</button></a>            </div>
         </div>
     </div>
 </head>
 <link rel="stylesheet" href="{{ url_for('static',filename='/css/cart.css') }}">
 <body>
-    <form action="/receipt" method="post" name="cart">
         <div class="cart" id="cart">
             {% if cart %}
-            <table>
+            <table class="foodtable">
                 <tr>
                     <th>Food</th>
                     <th>Price</th>
@@ -52,6 +52,11 @@
                 </tr>
                 {% endfor %}
             </table>
+            <textarea name="add_note" placeholder="add a note"></textarea>
+            <label class="parcel">Parcel
+                <input type="checkbox">
+                <span class="checkmark"></span>
+              </label>
             <div class="receipt">
                 <div class="listitem"><h2>Subtotal</h2><p class="foodsum pp">₹0</p></div>
                 <div class="listitem"><h2>Gst and restaurant charges</h2><p class="gst pp">₹0</p></div>
@@ -60,7 +65,7 @@
                     <div class="cartnone">Nothing in cart</div>
                 {% endif %}
             </div>
-            <div class="buy"><button class="chkt" name="buy" action="submit">Buy</button></div>
+            <form action="/receipt" method="post" name="cart"><div class="buy"><button class="chkt" name="buy" action="submit">Buy</button></div>
         </div>
     </form>
 </body>

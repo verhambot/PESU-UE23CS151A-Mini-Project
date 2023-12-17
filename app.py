@@ -1,17 +1,13 @@
 from flask import Flask, request, render_template, redirect, url_for, session
-from twilio.rest import Client
 import random
 import mysql.connector as sql
 import hashlib
 import os
 from dotenv import load_dotenv
 from flask_session import Session
+import send
 
 load_dotenv()
-
-account_sid = os.getenv('ACC_SID')
-auth_token = os.getenv('AUTH_TOKEN')
-client = Client(account_sid, auth_token)
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -24,15 +20,27 @@ sqlc = sql.connect(
 )
 cur=sqlc.cursor(buffered=True)
 
+@app.route('/resetadmin')
+def resetadmin():
+    session['admin']=False
+    session['cafe_admin']=False
+    return 'done'
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         srn = request.form.get('srn')
-        cur.execute(f'select phone from log1 where SRN="{srn}";')
-        ph=cur.fetchone()
-        if ph:
+        cur.execute(f'select phone,email from log1 where SRN="{srn}";')
+        x=cur.fetchone()
+        ph,email=x[0],x[1]
+        if ph and email:
             session['srn']=srn
-            session['gotp']=genotp(1)
+            gotp=genotp()
+            session['gotp']=gotp[1]
+            subject='OTP for Pessato'
+            body=f"Your otp is {gotp[0]}"
+            send._email(email,subject,body)
+            # send._msg(ph,session.get('gotp'))
             session['logged_in']=False
             return redirect(url_for('home'))
     return render_template('index.html')
@@ -41,6 +49,10 @@ def index():
 def home():
     srn = session.get('srn')
     gotp = session.get('gotp')
+    if srn:
+        cur.execute(f'select count(orderno) from adminmanageorders where srn="{srn}";')
+        if cur.fetchall()[0][0]>4:
+            return redirect(url_for('uorders'))
     if gotp is None or srn is None:
         return redirect(url_for('index'))
     if 'cart' in request.form:
@@ -95,9 +107,10 @@ def register():
         cod=request.form.get('pcode')
         srn=request.form.get('srn')
         phone=request.form.get('phone')
+        mail=request.form.get('email')
         phno=cod+phone
         if srn and phone:
-            cur.execute(f"insert into log1 values('{srn}','{phno}',0);")
+            cur.execute(f"insert into log1 values('{srn}','{phno}',0,'{mail}');")
             sqlc.commit()
             return 'registered'
     return render_template('register.html',data=[{'code':'+91'}, {'code':'+619'}, {'code':'+69'}])
@@ -110,7 +123,7 @@ def cartAdd():
     else:
         cur.execute(f'insert into carts values{tuple(quant)};')
     sqlc.commit()
-    return 'added'
+    return redirect(url_for('cart'))
 
 @app.route('/cartSub', methods=['POST'])
 def cartSub():
@@ -120,7 +133,7 @@ def cartSub():
     elif quant[2]==0:
         cur.execute(f'delete from carts where srn="{quant[3]}" and food="{quant[0]}";')
     sqlc.commit()
-    return 'removed'
+    return redirect(url_for('cart'))
 
 @app.route('/cart',methods=['GET','POST'])
 def cart():
@@ -142,26 +155,27 @@ def cart():
 @app.route('/receipt',methods=['POST'])
 def receipt():
     srn=session.get('srn')
-    # if request.method=='POST':
     wallbal=session.get('wallet')
-    print(wallbal)
-    cur.execute(f'select sum(price) from carts where srn="{srn}";')
-    grandtotal=cur.fetchone()[0]
-    print(grandtotal)
+    cur.execute(f'select price,quantity from carts where srn="{srn}";')
+    x=cur.fetchall()
+    grandtotal=sum(i[0]*i[1] for i in x)
     grandtotal=round(1.18*grandtotal,2)
 
     if wallbal>=grandtotal:
         cur.execute(f'select * from carts where srn="{srn}";')
         cart=cur.fetchall()
         cur.execute('select orderno from orders')
-        currorder=cur.fetchall()[-1][0]+1
+        try:
+            currorder=cur.fetchall()[-1][0]+1
+        except:
+            currorder=1
         tID=createTransID(srn,grandtotal,currorder)
         for i in cart:
             cur.execute(f'insert into orders values({currorder},"{i[0]}",{i[1]},"{tID}","paid",{i[2]},"{srn}");')
         wallbal-=grandtotal
         cur.execute(f'update log1 set wallet={wallbal} where srn="{srn}";')
         orderotp=genotp(3)
-        cur.execute(f'insert into adminmanageorders values({currorder},"{orderotp[1]}","{srn}");')
+        cur.execute(f'insert into adminmanageorders values({currorder},"{orderotp[0]}","{srn}","paid");')
         sqlc.commit()
         return redirect(url_for('uorders'))
     else:
@@ -169,14 +183,25 @@ def receipt():
 
 @app.route('/uorders',methods=['GET','POST'])
 def uorders():
+    wallet=session.get('wallet')
     srn=session.get('srn')
     cur.execute(f'select * from adminmanageorders where srn="{srn}";')
     userorders=cur.fetchall()
     passOrders=[]
     orderindex=[]
+    passOrderItems=[]
     for i in userorders:
         data={}
         data['orderno']=i[0]
+        cur.execute(f'select * from orders where srn="{srn}" and orderno={i[0]};')
+        orderItems=cur.fetchall()
+        for j in orderItems:
+            datao={}
+            datao['orderno']=j[0]
+            datao['food']=j[1]
+            datao['price']=j[2]
+            datao['status']=j[4]
+            passOrderItems.append(datao)
         orderindex.append(i[0])
         data['otp']=i[1]
         passOrders.append(data)
@@ -192,24 +217,100 @@ def uorders():
             sqlc.commit()
             return redirect(url_for('uorders'))
         return redirect(url_for('uorders'))
-    return render_template('uorders.html',passOrders=passOrders)
+    return render_template('uorders.html',wallet=wallet, passOrders=passOrders,passOrderItems=passOrderItems)
 
 @app.route('/addmoni',methods=['GET','POST'])
 def addmoni():
     srn=session.get('srn')
     if request.method=='POST':
-        amt=float(request.form.get('money'))
-        status=request.form.get('status')
-        if status:
-            cur.execute(f'update log1 set wallet={amt} where SRN="{srn}";')
-            return 'added'
+        amt=float(request.form.get('amt'))
+        cur.execute(f'select * from monireq where srn="{srn}";')
+        if cur.fetchall():
+            cur.execute(f'update monireq set amt={amt} where srn="{srn}";')
+        else:
+            cur.execute(f'insert into monireq values("{srn}",{amt});')
+        sqlc.commit()
     return render_template('addmoni.html')
+
+@app.route('/admin',methods=['GET','POST'])
+def admin():
+    if request.method=='POST' and 'amt' in request.form:
+        srn=request.form.get('srn')
+        amt=request.form.get('amt')
+        if request.form['submit_req']=='add':
+            cur.execute(f'update log1 set wallet=wallet+{amt} where srn="{srn}";')
+        cur.execute(f'delete from monireq where srn="{srn}";')
+        sqlc.commit()
+        return redirect(url_for('admin'))
+    if request.method=='POST' and 'login' in request.form or session['admin']:
+        session['admin']=True
+        uname=request.form.get('uname')
+        upass=request.form.get('password')
+        if upass:
+            check=hashpass(upass)
+        if session['admin'] or check=='ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270' and uname=='admin':
+            cur.execute('select * from monireq;')
+            x=cur.fetchall()
+            reqlist=[]
+            for i in x:
+                data={}
+                data['srn']=i[0]
+                data['amt']=i[1]
+                reqlist.append(data)
+            return render_template('admin.html',success=True,reqlist=reqlist)
+    return render_template('admin.html')
+
+@app.route('/cafeOrders',methods=['GET','POST'])
+def cafeOrders():
+    if request.method=='POST' and 'login' in request.form or session['cafe_admin']:
+        session['cafe_admin']=True
+        uname=request.form.get('uname')
+        upass=request.form.get('password')
+        if upass:
+            check=hashpass(upass)
+        if session['admin'] or check=='ac9689e2272427085e35b9d3e3e8bed88cb3434828b43b86fc0596cad4c6e270' and uname=='admin':
+            cur.execute('select srn from adminmanageorders where status="paid" group by srn;')
+            srns=[]
+            x=cur.fetchall()
+            for i in x:
+                srns.append(i[0])
+            cur.execute('select * from orders;')
+            x=cur.fetchall()
+            allOrders=[]
+            for i in x:
+                data={}
+                data['orderno']=i[0]
+                data['food']=i[1]
+                data['status']=i[4]
+                data['quantity']=i[5]
+                data['srn']=i[6]
+                allOrders.append(data)
+            return render_template('cafeOrders.html',srns=srns,allOrders=allOrders,success=True)
+    return render_template('cafeOrders.html')
+
+@app.route('/changeStatus',methods=['GET','POST'])
+def changeStatus():
+    if request.method=='POST':
+        orderno=request.form.get('orderno')
+        food=request.form.get('food')
+        if request.form['submit_status']=='ready':
+            cur.execute(f'update orders set status="ready to collect" where orderno={orderno} and food="{food}";')
+        elif request.form['submit_status']=='collected':
+            cur.execute(f'update orders set status="collected" where orderno={orderno} and food="{food}";')
+            cur.execute(f'update adminmanageorders set status="collected" where orderno={orderno};')
+        sqlc.commit()
+    return redirect(url_for('cafeOrders'))
+
+@app.route('/logout',methods=['GET'])
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html')
 
-def genotp(type):
+def genotp(type=3):
     gotp = random.randint(100000, 999999)
     sha256 = hashlib.sha256()
     sha256.update(str(gotp).encode())
@@ -224,15 +325,11 @@ def genotp(type):
     else:
         return string_hash
 
-def send_msg(ph,otp,reason):
-    b=''
-    if reason==1:
-        b=f'Your zomapes otp for login is {otp}'
-    message = client.messages.create(
-        from_='+12164382762',
-        body=b,
-        to=ph
-    )
+def hashpass(hasher):
+    sha256 = hashlib.sha256()
+    sha256.update(hasher.encode())
+    string_hash = sha256.hexdigest()
+    return string_hash
 
 def validate_otp(eotp, genotp):
     sha256 = hashlib.sha256()
@@ -248,4 +345,5 @@ def createTransID(srn,moni,order):
     return transID
 
 if __name__ == '__main__':
+    # app.run(debug=True)
     app.run(host='0.0.0.0', debug=True)

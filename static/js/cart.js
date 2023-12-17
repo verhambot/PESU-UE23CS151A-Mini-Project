@@ -1,4 +1,9 @@
 const srn=document.querySelector('.srn').innerHTML;
+const subtotal = document.querySelectorAll('.price');
+const sbdisplay = document.querySelector('.foodsum');
+const gstdisplay = document.querySelector('.gst');
+const gtdisplay = document.querySelector('.grandtotal');
+
 document.addEventListener('DOMContentLoaded', function() {
     const countButtons = document.querySelectorAll('.addd');
     const subtractButtons = document.querySelectorAll('.sub');
@@ -13,6 +18,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedFood = food[index].innerHTML;
             const foodPrice = Number(price[index].innerHTML.replace('\u20b9',''));
             var sqlAdd = [selectedFood, foodPrice, count+1, srn];
+            let subprice=0
+            subtotal.forEach((pr) => {
+                subprice+=Number(pr.innerHTML.replace('\u20b9',''))*(count+1);
+            });
+            gst=Math.round(.18*subprice+4);
+            grandtotal=gst+subprice;
+            sbdisplay.innerHTML =  '\u20b9'+subprice;
+            gstdisplay.innerHTML = '\u20b9'+gst;
+            gtdisplay.innerHTML = '\u20b9'+grandtotal;
             fetch('/cartAdd', {
                 method: 'POST',
                 headers: {
@@ -20,23 +34,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(sqlAdd)
             })
-            .then(response => response.text())
-            .catch(error => console.error('Error:', error));
         });
     });
-
-    const subtotal = document.querySelectorAll('.price');
-    console.log(subtotal);
-    const sbdisplay = document.querySelector('.foodsum');
-    const gstdisplay = document.querySelector('.gst');
-    const gtdisplay = document.querySelector('.grandtotal');
     let subprice=0
-    subtotal.forEach((pr) => {
-        console.log(pr.innerHTML);
-        subprice+=Number(pr.innerHTML.replace('\u20b9',''))
+    subtotal.forEach((pr,index) => {
+        const count = Number(countDisplay[index].innerHTML);
+        subprice+=Number(pr.innerHTML.replace('\u20b9',''))*count;
     });
-    const gst=Math.round(.18*subprice+4);
-    const grandtotal=gst+subprice;
+    let gst=Math.round(.18*subprice+4);
+    let grandtotal=gst+subprice;
     sbdisplay.innerHTML =  '\u20b9'+subprice;
     gstdisplay.innerHTML = '\u20b9'+gst;
     gtdisplay.innerHTML = '\u20b9'+grandtotal;
@@ -48,11 +54,23 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedFood = food[index].innerHTML;
             const foodPrice = Number(price[index].innerHTML.replace('\u20b9',''));
             var sqlSub = [selectedFood, foodPrice, count-1, srn];
-            if (count > 0) {
+            var table = document.querySelector('foodtable');
+            let subprice=0
+            subtotal.forEach((pr) => {
+                subprice+=Number(pr.innerHTML.replace('\u20b9',''))*(count-1);
+            });
+            gst=Math.round(.18*subprice+4);
+            grandtotal=gst+subprice;
+            sbdisplay.innerHTML =  '\u20b9'+subprice;
+            gstdisplay.innerHTML = '\u20b9'+gst;
+            gtdisplay.innerHTML = '\u20b9'+grandtotal;
+            if (count >= 0) {
                 countDisplay[index].innerHTML = String(count - 1);
                 if (count==1) {
                     removeTableRow(button);
-                    goHome();
+                    if (table.rows.length==0) {
+                        goHome();
+                    }
                 }
             fetch('/cartSub', {
                 method: 'POST',
@@ -61,8 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify(sqlSub)
             })
-            .then(response => response.text())
-            .catch(error => console.error('Error:', error));
         }
         });
     });
@@ -94,13 +110,5 @@ function goHome() {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(gotp),
     })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Response from Flask:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
 }

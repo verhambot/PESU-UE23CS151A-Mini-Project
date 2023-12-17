@@ -48,21 +48,41 @@ button:active {
 }
 
 .propop {
-    text-align: center;
     font-size: .5em;
     background-color: white;
     color: black;
-    padding: 0.8em;
+    padding: .8em;
     border-radius: 20px;
     z-index: 33;
     position: absolute;
-    margin-left: -15em;
+    margin-left:-12em;
     animation: fade-in .5s ease forwards;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 22em;
+}
+
+.ptitle {
+    border-bottom: black 5px solid;
+    padding-bottom: 1em;
+}
+
+.poption {
+    margin-top: .1em;
+    border-bottom: grey 5px solid;
+    padding: .7em 2em;
+    border-radius: 20px;
+}
+
+.poption:active {
+    border: none;
+    transform: translateY(.5em);
+}
+
+.wallethead {
+    height: 1.4em;
+    width: 1.4em;
 }
 
 .back {
@@ -125,7 +145,6 @@ button:active {
 
 table {
     border-collapse: collapse;
-    margin-bottom: 20px;
 }
   
 th, td {
@@ -171,6 +190,89 @@ p {
     display:flex;
     flex-direction: row;
     font-size: 2em;
+}
+
+textarea {
+    margin:1em;
+    margin-top: none;
+    border:none;
+    border-radius:4px;
+    background-color: rgb(128, 128, 128,2.2);
+    color:black;
+    padding: 5px;
+}
+
+.parcel {
+    display: block;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 1.3em;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.parcel input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: .8em;
+    width: .8em;
+    background-color: rgb(128, 128, 128,2.2);
+}
+
+.parcel:hover input ~ .checkmark {
+    background-color: rgb(128, 128, 128,2.2);
+}
+  
+.parcel input:checked ~ .checkmark {
+    background-color: #2196F3;
+}
+  
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+  
+.parcel input:checked ~ .checkmark:after {
+    display: block;
+}
+  
+.parcel .checkmark:after {
+    left: .2em;
+    width: .2em;
+    height: .5em;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+::placeholder {
+    color: rgb(0, 0, 0, .6);
+    font-family: 'mc';
+    text-align: center;
+}
+
+a, a:visited {
+    text-decoration: none;
+}
+
+a:visited {
+    color: black;
 }
 
 @font-face {

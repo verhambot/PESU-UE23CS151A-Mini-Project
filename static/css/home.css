@@ -84,9 +84,14 @@ body {
     display: none;
 }
 
-a, .poption:visited {
+.poption, .poption:visited {
     text-decoration: none;
     color:black;
+}
+
+a {
+    color: white;
+    text-decoration: none;
 }
 
 
@@ -205,7 +210,6 @@ button:active {
 
 .container {
     margin:2vh;
-
 }
 
 #Menu {
@@ -369,6 +373,12 @@ img {
     width:20.8em;
     height:20.8em;
     border-radius: 8px;
+}
+
+::placeholder {
+    color: rgb(0, 0, 0, .6);
+    font-family: 'mc';
+    text-align: center;
 }
 
 @font-face {

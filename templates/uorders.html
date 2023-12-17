@@ -18,30 +18,40 @@
             </defs>
             </svg>
             <div class="propop" style="display: none;">
-                <p>Logged in as {{srn}}</p>
-                <p>Profile</p>
-                <p><svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none">
+                <p class="ptitle">Logged in as {{srn}}</p>
+                <a href="/addmoni"><p class="poption"><svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none" class="wallethead">
                     <path d="M0 0H83.82V83.82H0V0Z" fill="white" fill-opacity="0.01"/>
                     <path d="M6.985 13.97H76.835V27.94C76.835 27.94 59.3725 31.4325 59.3725 41.91C59.3725 52.3875 76.835 55.88 76.835 55.88V69.85H6.985V13.97Z" fill="#2F88FF" stroke="black" stroke-width="6.985" stroke-linejoin="round"/>
                     <path d="M76.835 41.91H73.3425" stroke="black" stroke-width="6.985" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>₹{{wallet}}
-                </p>
-                <button class="logout">Logout</button>
-            </div>
+                </p></a>
+                <a href="/logout"><button class="logout">Logout</button></a>            </div>
         </div>
     </div>
 </head>
 <link rel="stylesheet" href="../static/css/uorders.css">
 <body>
     {% if passOrders %}
-    <p>Your Orders</p>
+    <h3>Your Orders</h3>
     <div class="uorders">
         {% for o in passOrders %}
         <form action="/uorders" class="uorder" method="POST" name="orderotp">
-            <label for="otp">
+            <label for="orderotp">
                 <input type="hidden" name="orderno" value="{{ o.orderno }}">
-                {{o.orderno}}: <input type="number" class="otp" name="orderotp" id="orderotp">
+                {{o.orderno}}: <input type="number" class="otp" name="orderotp" id="orderotp" placeholder="Enter the otp for your order">
             </label>
+            <p>Items in the order:</p>
+            <table>
+                {% for i in passOrderItems %}
+                    {% if o.orderno==i.orderno %}
+                        <tr>
+                            <td>{{i.food}}</td>
+                            <td>{{i.price}}</td>
+                            <td>{{i.status}}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
             <button class="submit" value="submit">Submit</button>
         </form>
         {% endfor %}

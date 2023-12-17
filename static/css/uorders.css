@@ -46,6 +46,28 @@ body {
     justify-content: center;
 }
 
+.ptitle {
+    border-bottom: black 5px solid;
+    padding-bottom: 1em;
+}
+
+.poption {
+    margin-top: .1em;
+    border-bottom: grey 5px solid;
+    padding: .7em 2em;
+    border-radius: 20px;
+}
+
+.poption:active {
+    border: none;
+    transform: translateY(.5em);
+}
+
+.wallethead {
+    height: 1em;
+    width: 1em;
+}
+
 .back {
     margin-right: auto;
 }
@@ -60,8 +82,9 @@ body {
     display: none;
 }
 
-a {
+a, .poption:visited {
     text-decoration: none;
+    color:black;
 }
 
 .formotp {
@@ -104,9 +127,10 @@ button:active {
 }
 
 input {
-    margin: .3em;
+    margin: .1em;
     margin-bottom: 1em;
-    height: 3vh;
+    height: fit-content;
+    width: 13em;
     border:none;
     border-radius:4px;
     background-color: rgb(128, 128, 128,2.2);
@@ -115,10 +139,42 @@ input {
     font-size: 4vw;
 }
 
+table {
+    width: fit-content;
+    border: 1px solid var(--primary);
+    display:flex;
+    margin:auto;
+    font-size: .75em;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    padding: .2em .3em;
+}
+
+tr td:not(:last-child) {
+    border-right: 1px solid var(--primary);
+    padding: .7em;
+    text-align: center;
+}
+
+
 ::placeholder {
     color: rgb(0, 0, 0, .6);
     font-family: 'mc';
-    text-align: center;
+    font-size: .6em;
+}
+
+p {
+    font-size: .8em;
+    margin-top: -.3em;
+}
+
+.uorder {
+    margin:2em;
+    border: var(--secondary) 2px solid;
+    padding: 1em;
+    border-radius: 16px;
 }
 
 @font-face {
