@@ -11,6 +11,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
+app.secret_key = 'admin1234'
 Session(app)
 sqlc = sql.connect(
     host = 'localhost',
