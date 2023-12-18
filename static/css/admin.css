@@ -76,7 +76,11 @@ button:active {
     color:black;
 }
 
-
+::placeholder {
+    color: rgb(0, 0, 0, .6);
+    font-family: 'mc';
+    text-align: center;
+}
 
 @font-face {
     font-family: 'mc';
