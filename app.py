@@ -41,7 +41,7 @@ def index():
             subject='OTP for Pessato'
             body=f"Your otp for PESSATO is {gotp[0]}"
             send._email(email,subject,body)
-            # send._msg(ph,session.get('gotp'))
+            send._msg(ph,gotp[0])
             session['logged_in']=False
             return redirect(url_for('home'))
     return render_template('index.html')
