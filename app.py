@@ -33,6 +33,7 @@ def index():
         cur.execute(f'select phone,email from log1 where SRN="{srn}";')
         x=cur.fetchone()
         ph,email=x[0],x[1]
+        session['email']=x[1]
         if ph and email:
             session['srn']=srn
             gotp=genotp()
@@ -160,8 +161,8 @@ def receipt():
     x=cur.fetchall()
     grandtotal=sum(i[0]*i[1] for i in x)
     grandtotal=round(1.18*grandtotal,2)
-
     if wallbal>=grandtotal:
+        pdfli=[]
         cur.execute(f'select * from carts where srn="{srn}";')
         cart=cur.fetchall()
         cur.execute('select orderno from orders')
@@ -170,13 +171,21 @@ def receipt():
         except:
             currorder=1
         tID=createTransID(srn,grandtotal,currorder)
+        pdfli.append(currorder)
         for i in cart:
             cur.execute(f'insert into orders values({currorder},"{i[0]}",{i[1]},"{tID}","paid",{i[2]},"{srn}");')
+            pdfli.append([i[0],i[2],i[1]])
         wallbal-=grandtotal
         cur.execute(f'update log1 set wallet={wallbal} where srn="{srn}";')
         orderotp=genotp(3)
         cur.execute(f'insert into adminmanageorders values({currorder},"{orderotp[0]}","{srn}","paid");')
         sqlc.commit()
+        send.getter(pdfli)
+        send._createPDF()
+        email=session.get('email')
+        subject='Order receipt by PESSATO'
+        body=f"Find your order receipt attached to this mail for order:{currorder}."
+        send._email(email,subject,body,True)
         return redirect(url_for('uorders'))
     else:
         return redirect(url_for('addmoni'))
