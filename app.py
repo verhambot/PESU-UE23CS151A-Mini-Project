@@ -112,7 +112,7 @@ def register():
         if srn and phone:
             cur.execute(f"insert into log1 values('{srn}','{phno}',0,'{mail}');")
             sqlc.commit()
-            return 'registered'
+            return redirect(url_for('index'))
     return render_template('register.html',data=[{'code':'+91'}, {'code':'+619'}, {'code':'+69'}])
 
 @app.route('/cartAdd', methods=['POST'])
