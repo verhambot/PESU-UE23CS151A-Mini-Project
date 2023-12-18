@@ -2,7 +2,6 @@ from flask import Flask, request, render_template, redirect, url_for, session
 import random
 import mysql.connector as sql
 import hashlib
-import os
 from dotenv import load_dotenv
 from flask_session import Session
 import send
