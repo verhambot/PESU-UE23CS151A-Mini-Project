@@ -38,7 +38,7 @@ def index():
             gotp=genotp()
             session['gotp']=gotp[1]
             subject='OTP for Pessato'
-            body=f"Your otp is {gotp[0]}"
+            body=f"Your otp for PESSATO is {gotp[0]}"
             send._email(email,subject,body)
             # send._msg(ph,session.get('gotp'))
             session['logged_in']=False

@@ -26,7 +26,6 @@ def _email(email_send,subject,body):
     server.login(email_user, email_password)
     server.sendmail(email_user, email_send, text)
     server.quit()
-    print("done")
 
 def _msg(ph,otp):
     b=f'Your zomapes otp for login is {otp}'
